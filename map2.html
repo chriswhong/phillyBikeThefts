@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Philly Bike Theft Data (January 2010 thru September 16th 2013</title>
+
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+	<script src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
+	<script src="http://lully.snv.jussieu.fr/gbif/mapping/jqueries/leaflet-src.js"></script>
+	<style type="text/css">
+	html, body{
+		height:100%;
+		margin:0;
+	}
+	#header{
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		font-family: sans-serif;
+		font-size: 35px;
+		padding: 10px;
+		background: #444;
+		width: 612px;
+		color: #ffffff;
+		text-align: left;
+		padding-right: 40px;
+		border: 2px solid #ddd;
+	}
+	#timestamp{
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		font-family: sans-serif;
+		font-size: 35px;
+		padding: 10px;
+		background: #444;
+		width: 291px;
+		color: #ffffff;
+		text-align: right;
+		padding-right: 40px;
+		border: 2px solid #ddd;
+	}
+
+	#footer{
+		position: absolute;
+		bottom: 10px;
+		left: 10px;
+		font-family: sans-serif;
+		font-size: 13px;
+		padding: 10px;
+		background: #444;
+		width: auto;
+		color: #ffffff;
+		text-align: left;
+		margin-right:10px;
+		border: 2px solid #ddd;
+	}
+
+	#key{
+		left: 10px;
+		font-family: sans-serif;
+		font-size: 18px;
+		padding: 10px;
+		background: #444;
+		color: #ffffff;
+		text-align: left;
+		border: 2px solid #ddd;
+		position: absolute;
+		top: 87px;
+		height: 100px;
+		width: 117px;
+	}
+	
+	a,a:hover, a:visited{
+		color: #38F7FF;
+	}
+
+	p{
+		display: inline-block;
+		margin-top: 1px;
+		position: relative;
+		top: -2px;
+		margin-left: 8px;
+	}
+
+	circle
+	{
+		fill-opacity: 0.6;
+	}
+
+	</style>
+</head>
+<body>
+
+	<div id="map" style="width: 100%; height: 100%;position:relative"></div>
+	<div id = "timestamp"></div>
+	<div id = "header">Philadelphia Bike Theft Data Animation</div>
+	<div id = "key">
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
+  			<circle cx="8" cy="8" r="8" fill="red"/>
+	</svg><p>Over $200</p>
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
+  			<circle cx="8" cy="8" r="8" fill="yellow"/>
+	</svg><p>$50-$199</p>
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
+  			<circle cx="8" cy="8" r="8" fill="green"/>
+	</svg><p>Under $50</p>
+	</div>
+	<div id = "footer">By <a href = "https://twitter.com/chris_whong">@chris_whong</a> | Made at <a href = "http://appsforphilly.org/">Apps for Philly Transit</a> | Data provided by the <a href = "https://github.com/CityOfPhiladelphia/phl-open-geodata/tree/master/bicycle_thefts">City of Philadelphia</a> | Support Open Data! | Made with <a href = "http://bl.ocks.org/ZJONSSON/3087431">D3 and Leaflet</a> | TODO: Add UI elements, add graph to show seasonal patterns</div>
+	<script type="text/javascript">
+	//Attribution: http://bl.ocks.org/ZJONSSON/3087431
+	//Made at #code4philly transit hackathon
+	
+	//var cloudmadeUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+	var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/25be350a4b6645449851882ffd56d82f/108659/256/{z}/{x}/{y}.png',
+	cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+	cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttribution});
+
+	var map = new L.Map('map', {
+		center: new L.LatLng( 39.94,-75.15,6),
+		zoom: 13, 
+		layers: [cloudmade]
+	});
+
+	/* Initialize the SVG layer */
+	map._initPathRoot()    
+
+	/* We simply pick up the SVG from the map object */
+	var svg = d3.select("#map").select("svg"),
+	g = svg.append("g");
+
+
+	
+	d3.csv("theft2.csv", function(collection) {
+		/* Add a LatLng object to each item in the dataset */
+		collection.forEach(function(d) {
+			d.LatLng = new L.LatLng(d.LAT,d.LNG)
+		})
+
+
+		var time = 1262304001;
+		var previousTime;
+
+		var filtered = collection.filter(function(d){
+			return (d.UnixResult < 1262304001);
+		});
+
+
+		function update() {
+
+			previousTime = time;
+			time = time + 86400;
+
+			showDateTime(time);
+
+			console.log(time);
+			grab = collection.filter(function(d){
+				return (d.UnixResult < time)&&(d.UnixResult > previousTime);	
+			});
+		 	//filtered = filtered.concat(grab);
+		 	filtered = grab;
+		 	console.log(filtered.length);
+		 	var feature = g.selectAll("circle")
+		 	.data(filtered,function(d){
+		 		return d.Key;
+		 	});
+		 	feature.enter().append("circle").attr("fill",function(d){
+		 		if(d.UCR==615) return "red";
+		 		if(d.UCR==625) return "yellow";
+		 		if(d.UCR==635) return "green";
+
+		 	}).attr("r",0).transition().duration(100).attr("r",function(d){
+		 		return map.getZoom();
+		 	});
+
+		 	feature.exit().transition().duration(250).attr("r",0).remove();
+
+		 	feature.attr("cx",function(d) { return map.latLngToLayerPoint(d.LatLng).x});
+		 	feature.attr("cy",function(d) { return map.latLngToLayerPoint(d.LatLng).y});
+
+
+		 	setTimeout(update,100);
+
+		 }
+
+		 function showDateTime(unixtime){
+		 	var newDate = new Date();
+			newDate.setTime(unixtime*1000);
+			dateString = newDate.toString();
+			dateString = dateString.slice(0,16);
+			document.getElementById("timestamp").innerHTML = dateString;
+		 }
+
+		 //map.on("viewreset", update);
+		 update();
+		})			 
+</script>
+</body>
+</html>

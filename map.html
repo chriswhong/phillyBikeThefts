@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>D3 + Leaflet</title>
+<style>
+
+
+@import url(style.css);
+
+#map {
+  width: 960px;
+  height: 500px;
+}
+
+path {
+  fill: #000;
+  fill-opacity: .2;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+path:hover {
+  fill: brown;
+  fill-opacity: .7;
+}
+
+</style>
+
+<header>
+  <aside>June 19, 2012</aside>
+  <a href="../" rel="author">Mike Bostock</a>
+</header>
+
+<h1>D3 + Leaflet</h1>
+
+<p id="map">
+
+<p><aside>Images © 2012 CloudMade, OpenStreetMap contributors, CC-BY-SA.</aside>
+
+
+
+<script src="http://d3js.org/d3.v2.min.js?2.9.3"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+<script>
+
+var map = new L.Map("map", {
+      center: [39.95, -75.15],
+      zoom: 12
+    })
+    .addLayer(new L.TileLayer("http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/998/256/{z}/{x}/{y}.png"));
+
+map._initPathRoot();
+
+var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+    g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+
+
+d3.csv("theft.csv", function(data) {
+  console.log(data)
+
+    data.forEach(function(d) {
+      d.LatLng = new L.LatLng(d.LNG,d.LAT)
+    })
+ 
+var point = g.selectAll("circle")
+      .data(data)
+      .enter().append("circle").attr("r",10).attr('fill','yellow');
+
+  function update() {
+      point.attr("cx",function(d) { return map.latLngToLayerPoint(d.LatLng).x})
+      point.attr("cy",function(d) { return map.latLngToLayerPoint(d.LatLng).y})
+      point.attr("r",10)
+    }
+
+map.on("viewreset", update);
+  update();
+
+});
+
+</script>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
