@@ -95,17 +95,17 @@
 	<div id = "timestamp"></div>
 	<div id = "header">Philadelphia Bike Theft Data Animation</div>
 	<div id = "key">
-	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
-  			<circle cx="8" cy="8" r="8" fill="red"/>
-	</svg><p>Over $200</p>
-	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
-  			<circle cx="8" cy="8" r="8" fill="yellow"/>
-	</svg><p>$50-$199</p>
-	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
-  			<circle cx="8" cy="8" r="8" fill="green"/>
-	</svg><p>Under $50</p>
+		<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
+			<circle cx="8" cy="8" r="8" fill="red"/>
+		</svg><p>Over $200</p>
+		<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
+			<circle cx="8" cy="8" r="8" fill="yellow"/>
+		</svg><p>$50-$199</p>
+		<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style= "width:16px; height:16px">
+			<circle cx="8" cy="8" r="8" fill="green"/>
+		</svg><p>Under $50</p>
 	</div>
-	<div id = "footer">By <a href = "https://twitter.com/chris_whong">@chris_whong</a> | Made at <a href = "http://appsforphilly.org/">Apps for Philly Transit</a> | Data provided by the <a href = "https://github.com/CityOfPhiladelphia/phl-open-geodata/tree/master/bicycle_thefts">City of Philadelphia</a> | Support Open Data! | Made with <a href = "http://bl.ocks.org/ZJONSSON/3087431">D3 and Leaflet</a> | TODO: Add UI elements, add graph to show seasonal patterns</div>
+	<div id = "footer">By <a href = "https://twitter.com/chris_whong">@chris_whong</a> | Made at <a href = "http://appsforphilly.org/">Apps for Philly Transit</a> | Data provided by the <a href = "https://github.com/CityOfPhiladelphia/phl-open-geodata/tree/master/bicycle_thefts">City of Philadelphia</a> | Support Open Data! | Made with <a href = "http://bl.ocks.org/ZJONSSON/3087431">D3 and Leaflet</a> | TODO: Add UI elements, add graph to show seasonal patterns | <a href = "https://github.com/louiedog98/phillyBikeThefts">Code on Github</a></div>
 	<script type="text/javascript">
 	//Attribution: http://bl.ocks.org/ZJONSSON/3087431
 	//Made at #code4philly transit hackathon
@@ -136,12 +136,11 @@
 			d.LatLng = new L.LatLng(d.LAT,d.LNG)
 		})
 
-
 		var time = 1262304001;
 		var previousTime;
 
 		var filtered = collection.filter(function(d){
-			return (d.UnixResult < 1262304001);
+			return (d.UnixDate < 1262304001);
 		});
 
 
@@ -154,11 +153,11 @@
 
 			console.log(time);
 			grab = collection.filter(function(d){
-				return (d.UnixResult < time)&&(d.UnixResult > previousTime);	
+				return (d.UnixDate < time)&&(d.UnixDate > previousTime);	
 			});
 		 	//filtered = filtered.concat(grab);
 		 	filtered = grab;
-		 	console.log(filtered.length);
+		 	console.log(filtered);
 		 	var feature = g.selectAll("circle")
 		 	.data(filtered,function(d){
 		 		return d.Key;
@@ -184,13 +183,13 @@
 
 		 function showDateTime(unixtime){
 		 	var newDate = new Date();
-			newDate.setTime(unixtime*1000);
-			dateString = newDate.toString();
-			dateString = dateString.slice(0,16);
-			document.getElementById("timestamp").innerHTML = dateString;
+		 	newDate.setTime(unixtime*1000);
+		 	dateString = newDate.toString();
+		 	dateString = dateString.slice(0,16);
+		 	document.getElementById("timestamp").innerHTML = dateString;
 		 }
 
-		 //map.on("viewreset", update);
+		
 		 update();
 		})			 
 </script>
