@@ -111,8 +111,8 @@
 	//Made at #code4philly transit hackathon
 	
 	//var cloudmadeUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-	var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/25be350a4b6645449851882ffd56d82f/108659/256/{z}/{x}/{y}.png',
-	cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+	var cloudmadeUrl = 'https://{s}.tiles.mapbox.com/v3/cwhong.map-hziyh867/{z}/{x}/{y}.png',
+	cloudmadeAttribution = "<a href='https://www.mapbox.com/about/maps/' target='_blank'>&copy; Mapbox &copy; OpenStreetMap</a> <a class='mapbox-improve-map' href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a>",
 	cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttribution});
 
 	var map = new L.Map('map', {
