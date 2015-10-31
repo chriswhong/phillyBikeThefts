@@ -215,7 +215,8 @@
 		 	newDate.setTime(unixtime*1000);
 		 	dateString = newDate.toString();
 		 	dateString = dateString.slice(0,16);
-		 	document.getElementById("timestamp").innerHTML = dateString;
+			var month = dateString.split(' ')[1];
+			document.getElementById("timestamp").innerHTML = dateString + getSeason(month);
 		 }
 
 		
