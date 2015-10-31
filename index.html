@@ -181,6 +181,35 @@
 
 		 }
 
+        function getSeason(month) {
+          season = '';
+          switch(month) {
+            case 'Dec':
+            case 'Jan':
+            case 'Feb':
+              season = 'Winter';
+              break;
+            case 'Mar':
+            case 'Apr':
+            case 'May':
+              season = 'Spring';
+              break;
+            case 'Jun':
+            case 'Jul':
+            case 'Aug':
+              season = 'Summer';
+              break;
+            case 'Sep':
+            case 'Oct':
+            case 'Nov':
+              season = 'Fall';
+              break;
+            default:
+              return 'Cannot determine season';
+           }
+          return season;
+        }
+
 		 function showDateTime(unixtime){
 		 	var newDate = new Date();
 		 	newDate.setTime(unixtime*1000);
